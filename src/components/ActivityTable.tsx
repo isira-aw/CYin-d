@@ -1,15 +1,41 @@
-import React from 'react';
-import { Activity } from '../types/api';
-import { Clock, MapPin, Activity as ActivityIcon } from 'lucide-react';
+import React from "react";
+import { Activity } from "../types/api";
+import { Clock, MapPin, Activity as ActivityIcon } from "lucide-react";
 
 interface ActivityTableProps {
   activities: Activity[];
   customerName?: string;
 }
+const LocationText = ({ coords }: { coords?: string }) => {
+  const [address, setAddress] = React.useState("Loading...");
 
-export const ActivityTable: React.FC<ActivityTableProps> = ({ 
-  activities, 
-  customerName 
+  React.useEffect(() => {
+    const fetchAddress = async () => {
+      if (!coords) {
+        setAddress("No location");
+        return;
+      }
+      const [lat, lng] = coords.split(",").map((val) => val.trim());
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        const fullAddress = data.display_name || "Unknown location";
+        const trimmed = fullAddress.split(",").slice(0, 3).join(","); // take only first 3 parts
+        setAddress(trimmed);
+      } catch {
+        setAddress("Failed to load");
+      }
+    };
+    fetchAddress();
+  }, [coords]);
+
+  return <span>{address}</span>;
+};
+
+
+export const ActivityTable: React.FC<ActivityTableProps> = ({
+  activities,
+  customerName,
 }) => {
   if (!activities || activities.length === 0) {
     return (
@@ -49,20 +75,26 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
             {activities.map((activity, index) => (
-              <tr key={index} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+              <tr
+                key={index}
+                className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
+              >
                 <td className="px-6 py-4 text-sm text-slate-900 dark:text-white font-mono">
-                  {activity.time || 'N/A'}
+                  {activity.time || "N/A"}
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                  {activity.location || 'No location'}
-                </td>
+  <LocationText coords={activity.location} />
+</td>
+
                 <td className="px-6 py-4">
-                  <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                    activity.status 
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                  }`}>
-                    {activity.status || 'No status'}
+                  <span
+                    className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                      activity.status
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                    }`}
+                  >
+                    {activity.status || "No status"}
                   </span>
                 </td>
               </tr>
