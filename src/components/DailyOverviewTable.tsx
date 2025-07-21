@@ -33,30 +33,32 @@ export const DailyOverviewTable: React.FC<DailyOverviewTableProps> = ({
     );
   }
   const LocationText = ({ coords }: { coords?: string }) => {
-  const [address, setAddress] = React.useState("Loading...");
+    const [address, setAddress] = React.useState("Loading...");
 
-  React.useEffect(() => {
-    const fetchAddress = async () => {
-      if (!coords) {
-        setAddress("No location");
-        return;
-      }
-      const [lat, lng] = coords.split(",").map((val) => val.trim());
-      try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-        const data = await res.json();
-        const fullAddress = data.display_name || "Unknown location";
-        const trimmed = fullAddress.split(",").slice(0, 2).join(","); // take only first 2 parts
-        setAddress(trimmed);
-      } catch {
-        setAddress("Failed to load");
-      }
-    };
-    fetchAddress();
-  }, [coords]);
+    React.useEffect(() => {
+      const fetchAddress = async () => {
+        if (!coords) {
+          setAddress("No location");
+          return;
+        }
+        const [lat, lng] = coords.split(",").map((val) => val.trim());
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+          );
+          const data = await res.json();
+          const fullAddress = data.display_name || "Unknown location";
+          const trimmed = fullAddress.split(",").slice(0, 2).join(","); // take only first 2 parts
+          setAddress(trimmed);
+        } catch {
+          setAddress("Failed to load");
+        }
+      };
+      fetchAddress();
+    }, [coords]);
 
-  return <span>{address}</span>;
-};
+    return <span>{address}</span>;
+  };
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
@@ -71,7 +73,7 @@ export const DailyOverviewTable: React.FC<DailyOverviewTableProps> = ({
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50 dark:bg-slate-700/50">
+          <thead className="bg-slate-50 dark:bg-slate-700/60">
             <tr>
               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">
                 Customer
@@ -81,6 +83,9 @@ export const DailyOverviewTable: React.FC<DailyOverviewTableProps> = ({
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">
                 Description
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">
+                Activity Date
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">
                 <Activity className="w-4 h-4 inline mr-2" />
@@ -97,8 +102,10 @@ export const DailyOverviewTable: React.FC<DailyOverviewTableProps> = ({
                 (report) => report.activities && report.activities.length > 0
               )
               .map((report, index) => {
-                const latestActivity =
-                  report.activities[report.activities.length - 1];
+                const latestActivity = {
+  ...report.activities?.[report.activities.length - 1],
+  date: report.reportDate,
+};
 
                 return (
                   <tr
@@ -118,11 +125,16 @@ export const DailyOverviewTable: React.FC<DailyOverviewTableProps> = ({
                     <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 max-w-xs whitespace-normal break-words">
                       {report.description || "No description"}
                     </td>
+                    
+                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                      {latestActivity?.date || "Unknown date"}
+                    </td>
                     <td className="px-6 py-4 text-sm text-slate-900 dark:text-white">
                       <span className="font-semibold">
                         {report.activities ? report.activities.length : 0}
                       </span>
                     </td>
+
                     <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
                       {latestActivity ? (
                         <div className="space-y-1">
@@ -134,7 +146,9 @@ export const DailyOverviewTable: React.FC<DailyOverviewTableProps> = ({
                               <MapPin className="w-3 h-3 mr-1" />
                               <span className="max-w-24">
                                 {/* {latestActivity.location} */}
-                                <LocationText coords={latestActivity.location} />
+                                <LocationText
+                                  coords={latestActivity.location}
+                                />
                               </span>
                             </div>
                           )}
