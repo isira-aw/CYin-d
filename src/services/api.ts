@@ -1,6 +1,6 @@
 import { Customer, CustomerReport } from '../types/api';
 
-const API_BASE_URL = 'http://localhost:8088/api';
+const API_BASE_URL = 'https://cyin-production.up.railway.app/api';
 
 export const apiService = {
   async getCustomers(): Promise<Customer[]> {
@@ -23,8 +23,8 @@ export const apiService = {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
-      return data;
+      const result  = await response.json();
+      return result.data;
     } catch (error) {
       console.error('Error fetching customer report:', error);
       throw error;

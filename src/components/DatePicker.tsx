@@ -22,7 +22,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         type="date"
         value={selectedDate}
         onChange={(e) => onDateChange(e.target.value)}
-        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 "
       />
     </div>
   );

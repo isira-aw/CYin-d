@@ -5,7 +5,6 @@ import { DatePicker } from './DatePicker';
 import { DailyOverviewTable } from './DailyOverviewTable';
 import { Search, Loader2, AlertCircle, Calendar, Download } from 'lucide-react';
 
-
 interface DailyOverviewProps {
   customers: Customer[];
   loading: boolean;
@@ -33,6 +32,14 @@ export const DailyOverview: React.FC<DailyOverviewProps> = ({
     return dates;
   };
 
+  // Function to calculate the difference between two dates in days
+  const getDateDifference = (start: string, end: string): number => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    return timeDiff / (1000 * 3600 * 24); // Convert time difference from milliseconds to days
+  };
+
   const handleSearch = async () => {
     if (!fromDate || !toDate) {
       setError('Please select both start and end dates.');
@@ -41,6 +48,12 @@ export const DailyOverview: React.FC<DailyOverviewProps> = ({
 
     if (new Date(fromDate) > new Date(toDate)) {
       setError('Start date must be before end date.');
+      return;
+    }
+
+    const dateDifference = getDateDifference(fromDate, toDate);
+    if (dateDifference > 45) {
+      setError('You can only search for a maximum of 45 days.');
       return;
     }
 
@@ -88,7 +101,7 @@ export const DailyOverview: React.FC<DailyOverviewProps> = ({
     <div className="space-y-6">
       <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
         <div className="flex items-center mb-6">
-          <Calendar className="w-6 h-6 text-green-600 mr-3" />
+          <Calendar className="w-6 h-6 text-white mr-3" />
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
             Daily Overview Report (Date Range)
           </h2>
