@@ -158,6 +158,7 @@ const EventLocation: React.FC<{ event: EventDetail }> = ({ event }) => {
         const location = await getAddressFromCoordinates(latitude, longitude);
         setAddress(location);
       } catch (err) {
+          console.error(err);  // Log the error
         setError("Failed to fetch address");
       } finally {
         setLoading(false);
