@@ -201,9 +201,9 @@ export const GroupReport: React.FC = () => {
                         <div>
                           <span className="text-slate-400">Status:</span>
                           <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                            event.status === 'go' ? 'bg-green-500/20 text-green-400' :
+                            event.status === 'starting working' ? 'bg-green-500/20 text-green-400' :
                             event.status === 'ending' ? 'bg-yellow-500/20 text-yellow-400' :
-                            event.status === 'ko' ? 'bg-red-500/20 text-red-400' :
+                            event.status === 'moving' ? 'bg-red-500/20 text-red-400' :
                             'bg-red-500/20 text-red-400'
                           }`}>
                             {event.status}
